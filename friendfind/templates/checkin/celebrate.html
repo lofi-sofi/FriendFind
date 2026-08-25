@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Yay!{% endblock %}
+{% block content %}
+<div class="card card-narrow checkin-card" id="celebrate" data-chime="success">
+  <h1>Yay, you're here! 💗✨</h1>
+  <p>{% if was_muted %}Welcome back — your group emails are switched back on.
+     {% else %}Check-in complete. See you again within 120 days!{% endif %}</p>
+  <div class="burst-stage" aria-hidden="true"></div>
+  <p><a class="btn btn-primary sparkle-hover" href="{{ url_for('directory.home') }}">Back to the directory 🎀</a></p>
+</div>
+{% endblock %}

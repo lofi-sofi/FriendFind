@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Two-factor code{% endblock %}
+{% block content %}
+<div class="card card-narrow">
+  <h1>One more step 🔒</h1>
+  <p>Enter the 6-digit code from your authenticator app.</p>
+  <form method="post">
+    <label>Code <input type="text" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9 ]*" required autofocus></label>
+    <button class="btn btn-primary sparkle-hover" type="submit">Verify ✨</button>
+  </form>
+</div>
+{% endblock %}

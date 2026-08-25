@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Change history{% endblock %}
+{% block content %}
+<h1>Change history 📖</h1>
+<p class="lede">Every handle add, edit, removal, and vouch — who, what, when.</p>
+<div class="card">
+  <table class="table">
+    <thead><tr><th>When</th><th>Who</th><th>What</th><th>Handle</th><th>Detail</th></tr></thead>
+    <tbody>
+    {% for e in events %}
+    <tr>
+      <td>{{ e.created_at.strftime('%b %-d, %Y %H:%M') }} UTC</td>
+      <td>{{ e.actor_name }}</td>
+      <td><span class="tag tag-{{ e.action }}">{{ e.action }}</span></td>
+      <td>{{ charm(e.platform, 18) }} @{{ e.username }}</td>
+      <td class="muted">{{ e.detail or '' }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">Nothing yet — quiet and cozy. ☁️</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

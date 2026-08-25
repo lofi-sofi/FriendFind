@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<h1>Settings 🎀</h1>
+
+<div class="card">
+  <h2>Email notifications 💌</h2>
+  <form method="post" action="{{ url_for('account.preferences') }}">
+    <label class="check">
+      <input type="checkbox" name="notify_new_handles" {{ 'checked' if current_user.notify_new_handles }}>
+      Email me when a member's new handle is verified
+    </label>
+    <label class="check">
+      <input type="checkbox" name="notify_checkin_reminders" {{ 'checked' if current_user.notify_checkin_reminders }}>
+      Email me check-in reminders (14, 7, and 1 day before my deadline)
+    </label>
+    <button class="btn btn-primary sparkle-hover" type="submit">Save preferences</button>
+  </form>
+  <p class="hint">Every email we send also has a one-click unsubscribe link.</p>
+</div>
+
+<div class="card">
+  <h2>Notification chimes 🔔</h2>
+  <label class="check">
+    <input type="checkbox" id="chime-enabled"> Play a chime on in-app notifications
+  </label>
+  <label>Chime
+    <select id="chime-choice">
+      <option value="twinkle">Twinkle ✨</option>
+      <option value="bell">Soft bell 🔔</option>
+      <option value="pop">Bubble pop 🫧</option>
+    </select>
+  </label>
+  <button class="btn btn-small" type="button" id="chime-preview">Preview</button>
+  <p class="hint">Stored in this browser only.</p>
+</div>
+
+<div class="card">
+  <h2>Two-factor authentication 🔒</h2>
+  {% if current_user.totp_secret %}
+    <p>2FA is <strong>on</strong>. ✨</p>
+    <form method="post" action="{{ url_for('auth.twofa_disable') }}">
+      <label>Confirm password to turn off
+        <input type="password" name="password" required></label>
+      <button class="btn btn-danger" type="submit">Turn off 2FA</button>
+    </form>
+  {% else %}
+    <p>2FA is <strong>off</strong>. It's optional, but it keeps your account safer.</p>
+    <a class="btn btn-primary sparkle-hover" href="{{ url_for('auth.twofa_setup') }}">Set up 2FA</a>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>Your data 📦</h2>
+  <p><a class="btn" href="{{ url_for('account.export') }}">Download my data (JSON)</a></p>
+  <p class="hint">Everything the app stores about you: account details, handles,
+     vouches, and your audit-log entries. We never store passwords for any
+     social platform.</p>
+  <p><a class="btn btn-danger" href="{{ url_for('account.delete') }}">Delete my account…</a></p>
+</div>
+{% endblock %}

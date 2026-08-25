@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}My handles{% endblock %}
+{% block content %}
+<h1>My handles 🎀</h1>
+<p class="lede">Lost an account? Add the new handle here — once a friend vouches
+   for it, the whole group gets an email so nobody loses track of you.</p>
+<p><a class="btn btn-primary sparkle-hover" href="{{ url_for('handles.add') }}">＋ Add a handle</a></p>
+
+{% if handles %}
+<ul class="handle-list card">
+  {% for h in handles %}
+  <li class="handle-row">
+    <div>
+      {{ charm(h.platform, 22) }}
+      <strong>{{ platform_name(h.platform) }}</strong>
+      <span class="handle-username">@{{ h.username }}</span>
+      {% if h.note %}<em class="muted">{{ h.note }}</em>{% endif %}
+    </div>
+    <div>
+      {% if h.is_verified %}<span class="tag tag-verified">✔ vouched</span>
+      {% else %}<span class="tag tag-pending">⏳ waiting for a vouch</span>{% endif %}
+      <a class="btn btn-small" href="{{ url_for('handles.edit', handle_id=h.id) }}">Edit</a>
+      <form method="post" action="{{ url_for('handles.delete', handle_id=h.id) }}" class="inline"
+            onsubmit="return confirm('Remove @{{ h.username }}?');">
+        <button class="btn btn-small btn-danger" type="submit">Remove</button>
+      </form>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<div class="card"><p>No handles yet — add your first one! ✨</p></div>
+{% endif %}
+{% endblock %}

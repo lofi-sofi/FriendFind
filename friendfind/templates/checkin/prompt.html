@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Check-in{% endblock %}
+{% block content %}
+<div class="card card-narrow checkin-card">
+  <h1>Still here? 💗</h1>
+  {% set days = current_user.days_until_checkin %}
+  {% if current_user.is_muted %}
+    <p>Your check-in window passed, so group emails are paused for you.
+       One tap brings them right back — nothing was deleted.</p>
+  {% elif days is not none %}
+    <p>Your next check-in is due in <strong>{{ days }} day{{ 's' if days != 1 }}</strong>.
+       You can check in early any time — it just restarts the 120-day timer.</p>
+  {% endif %}
+  <form method="post" action="{{ url_for('checkin.confirm') }}">
+    <button class="btn btn-big btn-primary sparkle-hover" type="submit">I'm still here 💗</button>
+  </form>
+</div>
+{% endblock %}

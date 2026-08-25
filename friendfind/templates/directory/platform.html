@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ platform_name(slug) }}{% endblock %}
+{% block content %}
+<h1>{{ charm(slug, 36) }} {{ platform_name(slug) }}</h1>
+<p class="lede">Members of the group who are on {{ platform_name(slug) }}.</p>
+
+{% if handles %}
+<ul class="handle-list card">
+  {% for h in handles %}
+  <li class="handle-row">
+    <div>
+      <strong>{{ h.owner.display_name }}</strong>
+      <span class="handle-username">@{{ h.username }}</span>
+      {% if h.note %}<em class="muted">{{ h.note }}</em>{% endif %}
+    </div>
+    <div>
+      {% if h.is_verified %}
+        <span class="tag tag-verified">✔ vouched</span>
+      {% elif h.user_id == current_user.id %}
+        <span class="tag tag-pending">⏳ waiting for a vouch</span>
+      {% else %}
+        <form method="post" action="{{ url_for('handles.vouch', handle_id=h.id) }}" class="inline">
+          <button class="btn btn-small sparkle-hover" type="submit">I recognize this account 💗</button>
+        </form>
+      {% endif %}
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<div class="card"><p>No one has added a {{ platform_name(slug) }} handle yet.
+  <a href="{{ url_for('handles.add') }}">Be the first ✨</a></p></div>
+{% endif %}
+<p><a href="{{ url_for('directory.home') }}">← All platforms</a></p>
+{% endblock %}
