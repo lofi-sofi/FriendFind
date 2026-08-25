@@ -11,6 +11,7 @@ token, no login required) plus List-Unsubscribe headers.
 from __future__ import annotations
 
 import smtplib
+import sys
 from email.message import EmailMessage
 
 from flask import current_app, url_for
@@ -43,7 +44,14 @@ def send_email(to: str, subject: str, body: str,
 
     host = cfg.get("SMTP_HOST")
     if not host:
-        current_app.logger.info("[email -> %s] %s\n%s", to, subject, body)
+        # Print straight to stderr rather than logger.info: Flask's app
+        # logger sits at WARNING outside debug mode, which would silently
+        # swallow the message (verification links included).
+        if not cfg.get("TESTING"):
+            print(f"\n──── email (SMTP not configured) ────\n"
+                  f"To: {to}\nSubject: {subject}\n\n{body}\n"
+                  f"─────────────────────────────────────\n",
+                  file=sys.stderr, flush=True)
         outbox.append({"to": to, "subject": subject, "body": body})
         return
 

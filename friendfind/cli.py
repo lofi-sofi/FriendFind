@@ -9,12 +9,24 @@
 from __future__ import annotations
 
 import click
-from flask import Flask, url_for
+from flask import Flask, current_app, url_for
 
 from .emailer import send_notification
 from .models import CHECKIN_PERIOD_DAYS, Invite, User, db
 
 REMINDER_STAGES = (14, 7, 1)  # days before the 120-day deadline
+
+
+def _external_url(endpoint: str, **values) -> str:
+    """url_for(_external=True) that works from the CLI without SERVER_NAME.
+
+    Deployments set SERVER_NAME so emailed links carry the real domain;
+    local dev falls back to the flask dev-server default.
+    """
+    if current_app.config.get("SERVER_NAME"):
+        return url_for(endpoint, _external=True, **values)
+    with current_app.test_request_context(base_url="http://localhost:5000/"):
+        return url_for(endpoint, _external=True, **values)
 
 
 def send_due_reminders() -> int:
@@ -32,7 +44,7 @@ def send_due_reminders() -> int:
         for stage in REMINDER_STAGES:
             if days_left <= stage and (user.reminder_stage_sent == 0
                                        or stage < user.reminder_stage_sent):
-                checkin_url = url_for("checkin.prompt", _external=True)
+                checkin_url = _external_url("checkin.prompt")
                 send_notification(
                     user, "checkin_reminder",
                     f"💗 FriendFind check-in — {days_left} day"
@@ -59,7 +71,7 @@ def register(app: Flask) -> None:
         invite = Invite()
         db.session.add(invite)
         db.session.commit()
-        url = url_for("auth.register", invite=invite.code, _external=True)
+        url = _external_url("auth.register", invite=invite.code)
         click.echo(f"Invite URL: {url}")
 
     @app.cli.command("set-admin")
