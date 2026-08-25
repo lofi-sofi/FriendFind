@@ -8,7 +8,8 @@ from flask import (Blueprint, Response, flash, g, redirect, render_template,
                    request, session, url_for)
 
 from .. import login_required
-from ..models import AuditLog, User, Vouch, db
+from ..emailer import send_email
+from ..models import AuditLog, User, Vouch, db, purge_user
 from ..security import SALT_UNSUBSCRIBE, read_token, verify_password
 
 bp = Blueprint("account", __name__, url_prefix="/account")
@@ -49,6 +50,29 @@ def unsubscribe(token):
     return render_template("account/unsubscribed.html", ok=True, category=category)
 
 
+@bp.route("/contact-admin", methods=["GET", "POST"])
+@login_required
+def contact_admin():
+    """Emails both admins directly — no public contact info listed anywhere."""
+    if request.method == "POST":
+        message = request.form.get("message", "").strip()
+        if not message:
+            flash("Write a message first!", "error")
+        else:
+            admins = User.query.filter_by(is_admin=True).all()
+            for admin in admins:
+                # Direct member-to-admin mail: bypasses notification prefs
+                # and mute (it's correspondence, not a group notification).
+                send_email(
+                    admin.email,
+                    f"📮 FriendFind message from {g.user.display_name}",
+                    f"From: {g.user.display_name} <{g.user.email}>\n\n{message}",
+                )
+            flash("Your message is on its way to the admins. 📮💗", "success")
+            return redirect(url_for("account.contact_admin"))
+    return render_template("account/contact_admin.html")
+
+
 def _iso(dt: datetime | None) -> str | None:
     return dt.isoformat() + "Z" if dt else None
 
@@ -65,6 +89,7 @@ def export():
             "display_name": u.display_name,
             "created_at": _iso(u.created_at),
             "email_verified": u.email_verified,
+            "is_admin": u.is_admin,
             "two_factor_enabled": bool(u.totp_secret),
             "last_checkin_at": _iso(u.last_checkin_at),
             "preferences": {
@@ -114,16 +139,7 @@ def delete():
         elif phrase != "delete forever":
             flash('Type "delete forever" exactly to confirm.', "error")
         else:
-            uid = g.user.id
-            # Purge everything referencing the user, then the row itself.
-            Vouch.query.filter_by(voucher_id=uid).delete()
-            AuditLog.query.filter_by(actor_id=uid).delete()
-            # Audit entries other members created about this user's handles
-            # (vouches) also mention them — purge those too.
-            for h in g.user.handles:
-                AuditLog.query.filter_by(platform=h.platform,
-                                         username=h.username).delete()
-            db.session.delete(g.user)  # cascades: handles (and their vouches)
+            purge_user(g.user)
             db.session.commit()
             session.clear()
             return render_template("account/deleted.html")

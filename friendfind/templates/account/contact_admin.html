@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Contact admin{% endblock %}
+{% block content %}
+<div class="card card-narrow">
+  <h1>Contact the admins 📮</h1>
+  <p>Whatever it is — a dispute, a worry, a locked account — this goes straight
+     to both admins' inboxes with your name and email attached, so they can
+     reply to you directly.</p>
+  <form method="post">
+    <label>Your message
+      <textarea name="message" rows="6" maxlength="4000" required
+                placeholder="Hi admins…"></textarea>
+    </label>
+    <button class="btn btn-primary sparkle-hover" type="submit">Send 💌</button>
+  </form>
+</div>
+{% endblock %}

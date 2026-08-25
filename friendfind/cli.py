@@ -62,6 +62,26 @@ def register(app: Flask) -> None:
         url = url_for("auth.register", invite=invite.code, _external=True)
         click.echo(f"Invite URL: {url}")
 
+    @app.cli.command("set-admin")
+    @click.argument("email")
+    @click.option("--revoke", is_flag=True, help="Remove admin status instead.")
+    def set_admin(email, revoke):
+        """Grant (or --revoke) admin status for a member.
+
+        This CLI command and a direct DB edit are the ONLY ways to change
+        admin status — there is deliberately no web UI for it. Run it once
+        for the founding member and once for the designated backup.
+        """
+        user = User.query.filter_by(email=email.strip().lower()).first()
+        if user is None:
+            raise click.ClickException(f"No member with email {email!r}.")
+        user.is_admin = not revoke
+        db.session.commit()
+        state = "no longer an admin" if revoke else "now an admin"
+        click.echo(f"{user.display_name} <{user.email}> is {state}.")
+        admins = User.query.filter_by(is_admin=True).count()
+        click.echo(f"Current admin count: {admins} (launch target is exactly 2).")
+
     @app.cli.command("send-reminders")
     def send_reminders():
         """Send due check-in reminder emails (run daily from cron)."""

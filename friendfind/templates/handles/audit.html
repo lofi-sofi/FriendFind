@@ -11,7 +11,8 @@
     <tr>
       <td>{{ e.created_at.strftime('%b %-d, %Y %H:%M') }} UTC</td>
       <td>{{ e.actor_name }}</td>
-      <td><span class="tag tag-{{ e.action }}">{{ e.action }}</span></td>
+      <td><span class="tag {{ 'tag-admin' if e.is_admin_action else 'tag-' + e.action }}">
+            {{ '🛡️ ' if e.is_admin_action }}{{ e.action.replace('admin_', '').replace('_', ' ') }}</span></td>
       <td>{{ charm(e.platform, 18) }} @{{ e.username }}</td>
       <td class="muted">{{ e.detail or '' }}</td>
     </tr>

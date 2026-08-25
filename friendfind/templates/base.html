@@ -21,6 +21,8 @@
     <a href="{{ url_for('checkin.prompt') }}" class="{{ 'nav-alert' if current_user.is_muted or (current_user.days_until_checkin is not none and current_user.days_until_checkin <= 14) }}">Check-in</a>
     <a href="{{ url_for('auth.invites') }}">Invites</a>
     <a href="{{ url_for('account.settings') }}">Settings</a>
+    <a href="{{ url_for('account.contact_admin') }}">Contact admin</a>
+    {% if current_user.is_admin %}<a href="{{ url_for('admin.home') }}">🛡️ Admin</a>{% endif %}
   </nav>
   {% endif %}
   <div class="topbar-right">

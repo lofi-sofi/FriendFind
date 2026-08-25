@@ -17,6 +17,27 @@ def login_required(view):
     return wrapped
 
 
+def _ensure_columns() -> None:
+    """Tiny migration shim: add columns introduced after a DB was created.
+
+    `create_all` only creates missing tables, so boolean columns added in
+    later versions are back-filled here (safe to run on every start).
+    """
+    from sqlalchemy import inspect, text
+
+    added = {
+        "users": {"is_admin": "BOOLEAN NOT NULL DEFAULT 0"},
+        "audit_log": {"is_admin_action": "BOOLEAN NOT NULL DEFAULT 0"},
+    }
+    inspector = inspect(db.engine)
+    with db.engine.begin() as conn:
+        for table, columns in added.items():
+            existing = {c["name"] for c in inspector.get_columns(table)}
+            for name, ddl in columns.items():
+                if name not in existing:
+                    conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {ddl}"))
+
+
 def create_app(test_config: dict | None = None) -> Flask:
     app = Flask(__name__)
     app.config.update(
@@ -43,13 +64,15 @@ def create_app(test_config: dict | None = None) -> Flask:
     db.init_app(app)
     with app.app_context():
         db.create_all()
+        _ensure_columns()
 
-    from .blueprints import account, auth, checkin, directory, handles
+    from .blueprints import account, admin, auth, checkin, directory, handles
     app.register_blueprint(auth.bp)
     app.register_blueprint(handles.bp)
     app.register_blueprint(directory.bp)
     app.register_blueprint(checkin.bp)
     app.register_blueprint(account.bp)
+    app.register_blueprint(admin.bp)
 
     from . import cli
     cli.register(app)

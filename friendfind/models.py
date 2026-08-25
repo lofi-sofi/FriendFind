@@ -31,6 +31,11 @@ class User(db.Model):
     email_verified = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
 
+    # Admin role. NEVER settable through the web UI — only via a direct DB
+    # edit or the `flask set-admin <email>` CLI command, so there is no
+    # privilege-escalation surface in request handlers.
+    is_admin = db.Column(db.Boolean, nullable=False, default=False)
+
     # Optional TOTP 2FA (opt-in). Secret only set once the user confirms a code.
     totp_secret = db.Column(db.String(64), nullable=True)
 
@@ -155,13 +160,32 @@ class AuditLog(db.Model):
     username = db.Column(db.String(120), nullable=False)
     detail = db.Column(db.String(300), nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
+    # True for actions taken with admin powers (delete/edit of another
+    # member's data, vouch overrides, invite revocation) — kept visually
+    # distinct in the history so admin changes are never silent.
+    is_admin_action = db.Column(db.Boolean, nullable=False, default=False)
 
     actor = db.relationship("User", foreign_keys=[actor_id])
 
 
 def log_event(actor: User, action: str, platform: str, username: str,
-              detail: str | None = None) -> None:
+              detail: str | None = None, *, admin: bool = False) -> None:
     db.session.add(AuditLog(
         actor_id=actor.id, actor_name=actor.display_name,
         action=action, platform=platform, username=username, detail=detail,
+        is_admin_action=admin,
     ))
+
+
+def purge_user(user: User) -> None:
+    """Hard-delete a member and everything referencing them (GDPR-style).
+
+    Shared by self-serve deletion and admin deletion. Does not commit.
+    """
+    Vouch.query.filter_by(voucher_id=user.id).delete()
+    AuditLog.query.filter_by(actor_id=user.id).delete()
+    # Audit entries other members created about this user's handles
+    # (vouches) also mention them — purge those too.
+    for h in user.handles:
+        AuditLog.query.filter_by(platform=h.platform, username=h.username).delete()
+    db.session.delete(user)  # cascades: handles (and their vouches)

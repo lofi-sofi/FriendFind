@@ -36,6 +36,14 @@ trustworthy re-connection.
   account, handles, vouches, and audit entries immediately.
 - **Two moods** — 🌸 *My Melody mode* (soft pastel pink) and 💀 *Kuromi mode*
   (dark and punkier), with sparkle micro-animations throughout.
+- **Admin role** — admins can view/edit/hard-delete any member's account,
+  revoke or reissue invite links, and reverse a disputed vouch. Every admin
+  action is written to the change history tagged 🛡️ as an admin action, so
+  nothing is ever silent. There is deliberately **no web UI path to admin
+  status** — only `flask set-admin <email>` or a direct DB edit — and regular
+  members see no admin controls at all (admin URLs 404 for them).
+- **Contact admin** — an in-app form that emails both admins directly over the
+  existing SMTP setup, so no contact info needs to be listed anywhere.
 
 ## Stack
 
@@ -56,6 +64,19 @@ flask run
 
 Without SMTP configured, outgoing email (including verification links) is
 printed to the console — handy for local testing.
+
+### Seeding the two launch admins
+
+After the founding member (Nova) and the designated backup have registered
+and verified, grant each admin status from the server — this is the only way
+to do it (no UI path exists):
+
+```bash
+flask set-admin nova@example.com
+flask set-admin backup@example.com
+```
+
+`flask set-admin <email> --revoke` removes it again.
 
 ## Deploying
 

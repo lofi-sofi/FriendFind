@@ -88,7 +88,7 @@ code { background: var(--bg-soft); padding: .1em .35em; border-radius: 8px; word
 .card-narrow { max-width: 460px; margin: 2rem auto; }
 
 label { display: block; margin: .8rem 0; font-weight: 600; }
-input[type=text], input[type=email], input[type=password], select {
+input[type=text], input[type=email], input[type=password], select, textarea {
   display: block; width: 100%; margin-top: .3rem; padding: .55rem .8rem;
   border: 2px solid var(--border); border-radius: 14px; font-family: inherit;
   font-size: 1rem; background: var(--bg); color: var(--ink);
@@ -137,6 +137,7 @@ input:focus, select:focus { outline: none; border-color: var(--accent); }
 .tag-add { background: var(--accent); color: var(--accent-ink); }
 .tag-vouch { background: var(--lavender); color: var(--card); }
 .tag-remove, .tag-edit { background: var(--bg-soft); color: var(--ink-soft); }
+.tag-admin { background: var(--ink); color: var(--card); border: 1px solid var(--accent-strong); }
 
 .platform-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
