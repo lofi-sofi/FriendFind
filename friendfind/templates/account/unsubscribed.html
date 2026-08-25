@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Unsubscribed{% endblock %}
+{% block content %}
+<div class="card card-narrow">
+  {% if ok %}
+  <h1>Unsubscribed 💌</h1>
+  <p>{% if category == 'new_handle' %}You won't get new-handle emails anymore.
+     {% elif category == 'checkin_reminder' %}You won't get check-in reminder emails anymore.
+     {% else %}You won't get any more group emails.{% endif %}
+     You can switch them back on any time in Settings.</p>
+  {% else %}
+  <h1>Hmm 🤔</h1>
+  <p>That unsubscribe link isn't valid anymore.</p>
+  {% endif %}
+</div>
+{% endblock %}

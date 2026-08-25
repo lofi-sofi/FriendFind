@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit handle' if handle else 'Add handle' }}{% endblock %}
+{% block content %}
+<div class="card card-narrow">
+  <h1>{{ 'Edit handle ✏️' if handle else 'Add a handle ✨' }}</h1>
+  <form method="post">
+    {% if not handle %}
+    <label>Platform
+      <select name="platform" required>
+        {% for slug, (name, _) in PLATFORMS.items() %}
+        <option value="{{ slug }}">{{ name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    {% else %}
+    <p>{{ charm(handle.platform, 22) }} {{ platform_name(handle.platform) }}</p>
+    {% endif %}
+    <label>Username
+      <input type="text" name="username" maxlength="120" required
+             value="{{ handle.username if handle else '' }}" placeholder="@username">
+    </label>
+    <label>Note <span class="hint">(optional — e.g. “new account after the ban”)</span>
+      <input type="text" name="note" maxlength="200" value="{{ handle.note or '' if handle else '' }}">
+    </label>
+    <button class="btn btn-primary sparkle-hover" type="submit">Save 🎀</button>
+  </form>
+  {% if handle %}
+  <p class="hint">Changing the username resets verification — a friend will
+     need to vouch for the new handle before it's broadcast.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Set up 2FA{% endblock %}
+{% block content %}
+<div class="card card-narrow">
+  <h1>Two-factor setup 🔒✨</h1>
+  <p>Scan this QR code with any authenticator app (Aegis, Google Authenticator,
+     1Password…), then enter the 6-digit code to switch it on.</p>
+  <div class="qr-box">{{ qr_svg | safe }}</div>
+  <p class="hint">Can't scan? Enter this secret manually: <code>{{ secret }}</code></p>
+  <form method="post">
+    <label>Code from your app
+      <input type="text" name="code" inputmode="numeric" autocomplete="one-time-code" required autofocus></label>
+    <button class="btn btn-primary sparkle-hover" type="submit">Turn on 2FA ✨</button>
+  </form>
+</div>
+{% endblock %}

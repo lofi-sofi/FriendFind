@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Edit member{% endblock %}
+{% block content %}
+<div class="card card-narrow">
+  <h1>{{ member.display_name }} 🛡️</h1>
+  <p class="hint">Joined {{ member.created_at.strftime('%b %-d, %Y') }} ·
+     {{ member.handles | length }} handle{{ 's' if member.handles | length != 1 }} ·
+     last check-in {{ member.last_checkin_at.strftime('%b %-d, %Y') if member.last_checkin_at else 'never' }}
+     {% if member.is_admin %} · <span class="tag tag-admin">🛡️ admin</span>{% endif %}</p>
+  <form method="post">
+    <label>Display name <input type="text" name="display_name" maxlength="80"
+           value="{{ member.display_name }}" required></label>
+    <label>Email <input type="email" name="email" value="{{ member.email }}" required></label>
+    <button class="btn btn-primary sparkle-hover" type="submit">Save changes</button>
+  </form>
+  <p class="hint">Changes are logged as admin actions. Admin status itself can't
+     be changed here — only via <code>flask set-admin</code> on the server.</p>
+</div>
+
+{% if member.id != current_user.id %}
+<div class="card card-narrow">
+  <h2>Hard-delete this account 💔</h2>
+  <p>Immediate, permanent purge of {{ member.display_name }}'s account, handles,
+     vouches, and audit entries. Only the admin-action record of the deletion
+     remains.</p>
+  <form method="post" action="{{ url_for('admin.delete_member', user_id=member.id) }}">
+    <label>Type <code>delete forever</code> to confirm
+      <input type="text" name="confirm_phrase" autocomplete="off" required></label>
+    <button class="btn btn-danger" type="submit">Delete {{ member.display_name }}'s account forever</button>
+  </form>
+</div>
+{% endif %}
+<p><a href="{{ url_for('admin.home') }}">← Admin tools</a></p>
+{% endblock %}

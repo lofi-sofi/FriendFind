@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Invites{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>Invite a friend 💌</h1>
+  <p>Each link works exactly once. Only share with people who belong in the group.</p>
+  <form method="post">
+    <button class="btn btn-primary sparkle-hover" type="submit">Create invite link 🎀</button>
+  </form>
+  {% if invites %}
+  <table class="table">
+    <thead><tr><th>Link</th><th>Status</th><th>Created</th></tr></thead>
+    <tbody>
+    {% for inv in invites %}
+      <tr>
+        <td>{% if inv.is_used %}<span class="muted">used</span>
+            {% else %}<code class="copyable">{{ url_for('auth.register', invite=inv.code, _external=True) }}</code>{% endif %}</td>
+        <td>{% if inv.is_used %}💗 joined{% else %}⏳ waiting{% endif %}</td>
+        <td>{{ inv.created_at.strftime('%b %-d, %Y') }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+{% endblock %}

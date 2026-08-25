@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Join the group{% endblock %}
+{% block content %}
+<div class="card card-narrow">
+  <h1>You're invited! 💌</h1>
+  <p>Make your account — you'll get a verification email before it activates.</p>
+  <form method="post">
+    <input type="hidden" name="invite" value="{{ invite }}">
+    <label>Display name <input type="text" name="display_name" maxlength="80" required autofocus></label>
+    <label>Email <input type="email" name="email" required></label>
+    <label>Password <input type="password" name="password" minlength="10" required>
+      <span class="hint">At least 10 characters.</span></label>
+    <button class="btn btn-primary sparkle-hover" type="submit">Create account 🎀</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Directory{% endblock %}
+{% block content %}
+<h1>Platform directory 🎀</h1>
+<p class="lede">Pick a platform to see which members are on it.</p>
+
+<div class="platform-grid">
+  {% for slug, (name, _) in PLATFORMS.items() %}
+  <a class="platform-card sparkle-hover {{ 'platform-empty' if not counts.get(slug) }}"
+     href="{{ url_for('directory.platform', platform=slug) }}">
+    {{ charm(slug, 34) }}
+    <span class="platform-card-name">{{ name }}</span>
+    <span class="platform-card-count">{{ counts.get(slug, 0) }} member{{ 's' if counts.get(slug, 0) != 1 }}</span>
+  </a>
+  {% endfor %}
+</div>
+
+{% if pending %}
+<div class="card">
+  <h2>Needs a vouch 👀</h2>
+  <p class="hint">Recognize one of these accounts? Vouch to confirm it's really
+     them — that unlocks the broadcast to the whole group.</p>
+  <ul class="vouch-list">
+    {% for h in pending %}
+    <li>
+      {{ charm(h.platform, 22) }}
+      <strong>{{ h.owner.display_name }}</strong> · @{{ h.username }} on {{ platform_name(h.platform) }}
+      {% if h.note %}<em class="muted">({{ h.note }})</em>{% endif %}
+      <form method="post" action="{{ url_for('handles.vouch', handle_id=h.id) }}" class="inline">
+        <button class="btn btn-small sparkle-hover" type="submit">I recognize this account 💗</button>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<div class="card">
+  <h2>Members</h2>
+  <ul class="member-list">
+    {% for m in members %}
+    <li>
+      <strong>{{ m.display_name }}</strong>
+      {% if m.is_muted %}<span class="tag tag-muted">💤 quiet</span>{% endif %}
+      <span class="muted">{{ m.handles | selectattr('is_verified') | list | length }} verified handle{{ 's' if (m.handles | selectattr('is_verified') | list | length) != 1 }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  <p><a href="{{ url_for('handles.audit') }}">View change history →</a></p>
+</div>
+{% endblock %}

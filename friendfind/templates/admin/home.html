@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+{% block content %}
+<h1>Admin tools 🛡️🎀</h1>
+<p class="lede">Every action here is written to the change history tagged as an
+   admin action — nothing is silent.</p>
+
+<div class="card">
+  <h2>Members</h2>
+  <table class="table">
+    <thead><tr><th>Member</th><th>Email</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    {% for m in members %}
+    <tr>
+      <td><strong>{{ m.display_name }}</strong>
+          {% if m.is_admin %}<span class="tag tag-admin">🛡️ admin</span>{% endif %}</td>
+      <td>{{ m.email }}</td>
+      <td>
+        {% if not m.email_verified %}<span class="tag tag-pending">unverified</span>
+        {% elif m.is_muted %}<span class="tag tag-muted">💤 muted</span>
+        {% else %}<span class="tag tag-verified">active</span>{% endif %}
+      </td>
+      <td><a class="btn btn-small" href="{{ url_for('admin.edit_member', user_id=m.id) }}">View / edit</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>Invites</h2>
+  <form method="post" action="{{ url_for('admin.reissue_invite') }}" class="inline">
+    <button class="btn btn-primary btn-small sparkle-hover" type="submit">Issue new invite 💌</button>
+  </form>
+  <table class="table">
+    <thead><tr><th>Link</th><th>Created by</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    {% for inv in invites %}
+    <tr>
+      <td>{% if inv.is_used %}<span class="muted">used</span>
+          {% else %}<code>{{ url_for('auth.register', invite=inv.code, _external=True) }}</code>{% endif %}</td>
+      <td>{{ inv.created_by_id and (members | selectattr('id', 'equalto', inv.created_by_id) | map(attribute='display_name') | first) or '—' }}</td>
+      <td>{% if inv.is_used %}💗 joined{% else %}⏳ open{% endif %}</td>
+      <td>{% if not inv.is_used %}
+        <form method="post" action="{{ url_for('admin.revoke_invite', invite_id=inv.id) }}" class="inline"
+              onsubmit="return confirm('Kill this invite link?');">
+          <button class="btn btn-small btn-danger" type="submit">Revoke</button>
+        </form>{% endif %}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">No invites yet.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>Vouched handles</h2>
+  <p class="hint">Reverse a disputed vouch: the handle goes back to pending and
+     won't broadcast again until someone re-vouches.</p>
+  <table class="table">
+    <thead><tr><th>Member</th><th>Handle</th><th>Vouched by</th><th></th></tr></thead>
+    <tbody>
+    {% for h in verified_handles %}
+    <tr>
+      <td>{{ h.owner.display_name }}</td>
+      <td>{{ charm(h.platform, 18) }} @{{ h.username }}</td>
+      <td>{{ h.vouches | map(attribute='voucher.display_name') | join(', ') or '—' }}</td>
+      <td>
+        <form method="post" action="{{ url_for('admin.revoke_vouch', handle_id=h.id) }}" class="inline"
+              onsubmit="return confirm('Reverse the vouch on @{{ h.username }}?');">
+          <button class="btn btn-small btn-danger" type="submit">Reverse vouch</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">No verified handles yet.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

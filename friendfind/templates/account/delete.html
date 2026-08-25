@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Delete account{% endblock %}
+{% block content %}
+<div class="card card-narrow">
+  <h1>Delete your account 💔</h1>
+  <p>This is a <strong>hard delete</strong>: your account, handles, vouches, and
+     audit-log entries are purged immediately and permanently. There is no
+     deactivation, no grace period, no recovery.</p>
+  <form method="post">
+    <label>Your password <input type="password" name="password" required></label>
+    <label>Type <code>delete forever</code> to confirm
+      <input type="text" name="confirm_phrase" autocomplete="off" required></label>
+    <button class="btn btn-danger" type="submit">Delete everything, forever</button>
+  </form>
+  <p><a href="{{ url_for('account.settings') }}">← Never mind, keep my account</a></p>
+</div>
+{% endblock %}
