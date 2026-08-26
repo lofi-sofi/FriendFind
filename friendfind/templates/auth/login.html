@@ -8,6 +8,7 @@
     <label>Password <input type="password" name="password" required></label>
     <button class="btn btn-primary sparkle-hover" type="submit">Log in ✨</button>
   </form>
+  <p class="hint"><a href="{{ url_for('auth.forgot_password') }}">Forgot password?</a></p>
   <p class="hint">No public signup — you need an invite link from a member.</p>
 </div>
 {% endblock %}

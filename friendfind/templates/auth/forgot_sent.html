@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Check your inbox{% endblock %}
+{% block content %}
+<div class="card card-narrow">
+  <h1>Check your inbox 💌</h1>
+  <p>If <strong>{{ email }}</strong> is registered to a member, a password
+     reset link is on its way. It's valid for 1 hour and works exactly once.</p>
+  <p><a href="{{ url_for('auth.login') }}">← Back to log in</a></p>
+</div>
+{% endblock %}

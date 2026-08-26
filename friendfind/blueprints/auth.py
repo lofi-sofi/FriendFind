@@ -10,13 +10,15 @@ from flask import (Blueprint, abort, flash, g, redirect, render_template,
 
 from .. import login_required
 from ..emailer import send_email
-from ..models import Invite, User, db, utcnow
-from ..security import (SALT_VERIFY_EMAIL, hash_password, make_token,
-                        read_token, verify_password)
+from ..models import Invite, User, db, log_event, utcnow
+from ..security import (SALT_RESET_PASSWORD, SALT_VERIFY_EMAIL, hash_password,
+                        make_token, password_fingerprint, read_token,
+                        verify_password)
 
 bp = Blueprint("auth", __name__)
 
 VERIFY_MAX_AGE = 60 * 60 * 48  # 48h
+RESET_MAX_AGE = 60 * 60  # reset links live for 1 hour
 
 
 def _send_verification(user: User) -> None:
@@ -113,6 +115,66 @@ def login_2fa():
             return redirect(url_for("directory.home"))
         flash("That code didn't match — try again.", "error")
     return render_template("auth/login_2fa.html")
+
+
+# -- Password reset -------------------------------------------------------
+
+@bp.route("/forgot", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        user = User.query.filter_by(email=email).first()
+        if user and user.email_verified:
+            token = make_token(
+                {"uid": user.id, "fp": password_fingerprint(user.password_hash)},
+                SALT_RESET_PASSWORD,
+            )
+            link = url_for("auth.reset_password", token=token, _external=True)
+            send_email(
+                user.email,
+                "Reset your FriendFind password 🔑",
+                f"Hi {user.display_name}!\n\nTap this link to set a new "
+                f"password:\n\n{link}\n\nThe link is valid for 1 hour and "
+                "works exactly once. If you didn't ask for this, you can "
+                "ignore it — your password is unchanged.",
+            )
+        # Same page either way — never reveal whether the email is a member.
+        return render_template("auth/forgot_sent.html", email=email)
+    return render_template("auth/forgot.html")
+
+
+def _reset_user_from(token: str) -> User | None:
+    """Resolve a reset token to its user, or None if invalid/expired/spent."""
+    payload = read_token(token, SALT_RESET_PASSWORD, max_age=RESET_MAX_AGE)
+    if not payload:
+        return None
+    user = db.session.get(User, payload.get("uid"))
+    # Fingerprint mismatch means the password changed since the token was
+    # issued (including by this very token) — single-use enforcement.
+    if user is None or payload.get("fp") != password_fingerprint(user.password_hash):
+        return None
+    return user
+
+
+@bp.route("/reset/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    user = _reset_user_from(token)
+    if user is None:
+        return render_template("auth/reset_invalid.html"), 404
+    if request.method == "POST":
+        password = request.form.get("password", "")
+        if len(password) < 10:
+            flash("Password must be at least 10 characters.", "error")
+        else:
+            user.password_hash = hash_password(password)
+            log_event(user, "password_reset", "account", user.display_name,
+                      "self-service reset via emailed link")
+            db.session.commit()
+            session.clear()
+            flash("Password updated — log in with your new password. 🔑✨",
+                  "success")
+            return redirect(url_for("auth.login"))
+    return render_template("auth/reset.html", token=token)
 
 
 @bp.route("/logout", methods=["POST"])

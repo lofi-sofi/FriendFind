@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Set new password{% endblock %}
+{% block content %}
+<div class="card card-narrow">
+  <h1>Set a new password 🔑✨</h1>
+  <form method="post">
+    <label>New password
+      <input type="password" name="password" minlength="10" required autofocus>
+      <span class="hint">At least 10 characters.</span></label>
+    <button class="btn btn-primary sparkle-hover" type="submit">Save new password 🎀</button>
+  </form>
+</div>
+{% endblock %}

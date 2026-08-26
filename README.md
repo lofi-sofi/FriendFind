@@ -13,7 +13,9 @@ trustworthy re-connection.
 - **Invite-only** — no public signup; members create single-use invite links
   (or use `flask create-invite` from the terminal to bootstrap the first member).
 - **Auth & security** — Argon2 password hashing, email verification before the
-  account activates, optional TOTP 2FA (QR-code setup, opt-in). The app stores
+  account activates, optional TOTP 2FA (QR-code setup, opt-in), and self-serve
+  password reset via a signed email link (1-hour expiry, strictly single-use,
+  enumeration-safe messaging, logged to the audit trail). The app stores
   *only* email, password hash, and platform+username pairs — never any
   credentials for external platforms.
 - **Handles** — add/edit/remove, each tagged with a custom "charm" icon

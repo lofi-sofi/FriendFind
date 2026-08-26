@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Link expired{% endblock %}
+{% block content %}
+<div class="card card-narrow">
+  <h1>That link doesn't work anymore 🥀</h1>
+  <p>Reset links last 1 hour and work exactly once. This one is expired,
+     already used, or not valid.</p>
+  <p><a class="btn btn-primary sparkle-hover" href="{{ url_for('auth.forgot_password') }}">Request a fresh link 💌</a></p>
+</div>
+{% endblock %}
