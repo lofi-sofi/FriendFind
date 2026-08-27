@@ -80,6 +80,11 @@ code { background: var(--bg-soft); padding: .1em .35em; border-radius: 8px; word
 
 .page { flex: 1; width: min(880px, 94vw); margin: 1.4rem auto; }
 .footer { text-align: center; color: var(--ink-soft); padding: 1.2rem; font-size: .85rem; }
+.kofi-link {
+  color: var(--accent-strong); font-weight: 600; text-decoration: none;
+  border-bottom: 1px dashed var(--accent); padding-bottom: 1px;
+}
+.kofi-link:hover { color: var(--accent); border-bottom-style: solid; }
 
 .card {
   background: var(--card); border: 2px solid var(--border); border-radius: 22px;
