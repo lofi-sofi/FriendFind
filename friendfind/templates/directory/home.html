@@ -39,10 +39,23 @@
   <h2>Members</h2>
   <ul class="member-list">
     {% for m in members %}
-    <li>
-      <strong>{{ m.display_name }}</strong>
-      {% if m.is_muted %}<span class="tag tag-muted">💤 quiet</span>{% endif %}
-      <span class="muted">{{ m.handles | selectattr('is_verified') | list | length }} verified handle{{ 's' if (m.handles | selectattr('is_verified') | list | length) != 1 }}</span>
+    <li class="member-row">
+      <span>
+        <strong>{{ m.display_name }}</strong>
+        {% if m.is_muted %}<span class="tag tag-muted">💤 quiet</span>{% endif %}
+        <span class="muted">{{ m.handles | selectattr('is_verified') | list | length }} verified handle{{ 's' if (m.handles | selectattr('is_verified') | list | length) != 1 }}</span>
+      </span>
+      {% if m.id != current_user.id %}
+      <form method="post" action="{{ url_for('directory.mute_toggle', user_id=m.id) }}" class="inline">
+        {% if m.id in muted_ids %}
+        <button class="btn btn-small" type="submit"
+                title="You've muted {{ m.display_name }}'s new-handle emails. Click to unmute.">🔕 muted for you</button>
+        {% else %}
+        <button class="btn btn-small btn-ghost" type="submit"
+                title="Stop getting emails when {{ m.display_name }} adds a new handle (just for you — they won't know).">🔔 notifying</button>
+        {% endif %}
+      </form>
+      {% endif %}
     </li>
     {% endfor %}
   </ul>

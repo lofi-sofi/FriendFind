@@ -9,7 +9,7 @@ from flask import (Blueprint, Response, flash, g, redirect, render_template,
 
 from .. import login_required
 from ..emailer import send_email
-from ..models import AuditLog, User, Vouch, db, purge_user
+from ..models import AuditLog, MemberMute, User, Vouch, db, purge_user
 from ..security import SALT_UNSUBSCRIBE, read_token, verify_password
 
 bp = Blueprint("account", __name__, url_prefix="/account")
@@ -107,6 +107,14 @@ def export():
                 "verified_at": _iso(h.verified_at),
             }
             for h in u.handles
+        ],
+        # Only mutes this user created — who muted *them* is other members'
+        # private data (muting is silent by design).
+        "members_muted": [
+            {"display_name": (db.session.get(User, m.muted_id).display_name
+                              if db.session.get(User, m.muted_id) else "?"),
+             "created_at": _iso(m.created_at)}
+            for m in MemberMute.query.filter_by(muter_id=u.id).all()
         ],
         "vouches_given": [
             {"handle_owner": v.handle.owner.display_name,

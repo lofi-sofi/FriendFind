@@ -167,6 +167,7 @@ input:focus, select:focus { outline: none; border-color: var(--accent); }
 .handle-row:last-child { border-bottom: none; }
 .handle-username { color: var(--accent-strong); font-weight: 700; margin: 0 .4rem; }
 .vouch-list li, .member-list li { padding: .45rem 0; border-bottom: 1px dashed var(--border); }
+.member-row { display: flex; align-items: center; justify-content: space-between; gap: .8rem; flex-wrap: wrap; }
 .vouch-list li:last-child, .member-list li:last-child { border-bottom: none; }
 
 .charm { vertical-align: middle; }

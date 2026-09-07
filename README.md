@@ -33,6 +33,15 @@ trustworthy re-connection.
 - **Notifications** — granular email preferences, one-click unsubscribe links
   (signed token, no login, `List-Unsubscribe` headers), and an optional
   in-browser chime pack (three synthesized chimes, no audio files).
+- **Per-member mutes** — everyone is auto-subscribed to everyone's broadcasts
+  by default, but any member can toggle off a specific person's new-handle
+  emails from the directory. One-directional and silent (the muted member is
+  never told, and nothing is written to the shared change history); it only
+  suppresses that person's broadcast emails — vouching, visibility, and every
+  other interaction are untouched. Entirely separate from the 120-day
+  check-in mute. *Scale note: the flat toggle list on the directory is right
+  for a small group; past ~100 members, revisit with search-as-you-type or
+  platform-based filtering rather than growing this list.*
 - **Data rights** — self-serve JSON export of everything stored about you, and
   self-serve **hard delete** (password + typed confirmation) that purges the
   account, handles, vouches, and audit entries immediately.

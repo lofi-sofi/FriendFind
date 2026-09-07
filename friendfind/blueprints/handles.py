@@ -6,7 +6,8 @@ from flask import (Blueprint, abort, flash, g, redirect, render_template,
 
 from .. import login_required
 from ..emailer import send_notification
-from ..models import AuditLog, Handle, User, Vouch, db, log_event, utcnow
+from ..models import (AuditLog, Handle, MemberMute, User, Vouch, db,
+                      log_event, utcnow)
 from ..platforms import PLATFORMS, platform_name
 
 bp = Blueprint("handles", __name__, url_prefix="/handles")
@@ -126,7 +127,14 @@ def _broadcast_verified(handle: Handle, vouched_by: User) -> None:
         + f"\nVouched for by {vouched_by.display_name}, so it's confirmed real.\n"
         f"Give them a follow so nobody loses touch!"
     )
+    # Members who personally muted the handle's owner are skipped — silent,
+    # one-directional, and unrelated to the check-in mute (which
+    # send_notification already enforces).
+    muter_ids = {m.muter_id for m in
+                 MemberMute.query.filter_by(muted_id=handle.user_id).all()}
     for member in User.query.filter(User.id != handle.user_id).all():
+        if member.id in muter_ids:
+            continue
         send_notification(member, "new_handle", subject, body)
 
 
