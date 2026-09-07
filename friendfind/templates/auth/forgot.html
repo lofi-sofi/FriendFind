@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Forgot password{% endblock %}
+{% block content %}
+<div class="card card-narrow">
+  <h1>Forgot your password? 🔑</h1>
+  <p>Enter your email — if it belongs to a member, we'll send a reset link.</p>
+  <form method="post">
+    <label>Email <input type="email" name="email" required autofocus></label>
+    <button class="btn btn-primary sparkle-hover" type="submit">Send reset link 💌</button>
+  </form>
+  <p><a href="{{ url_for('auth.login') }}">← Back to log in</a></p>
+</div>
+{% endblock %}

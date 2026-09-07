@@ -13,7 +13,9 @@ trustworthy re-connection.
 - **Invite-only** — no public signup; members create single-use invite links
   (or use `flask create-invite` from the terminal to bootstrap the first member).
 - **Auth & security** — Argon2 password hashing, email verification before the
-  account activates, optional TOTP 2FA (QR-code setup, opt-in). The app stores
+  account activates, optional TOTP 2FA (QR-code setup, opt-in), and self-serve
+  password reset via a signed email link (1-hour expiry, strictly single-use,
+  enumeration-safe messaging, logged to the audit trail). The app stores
   *only* email, password hash, and platform+username pairs — never any
   credentials for external platforms.
 - **Handles** — add/edit/remove, each tagged with a custom "charm" icon
@@ -31,11 +33,32 @@ trustworthy re-connection.
 - **Notifications** — granular email preferences, one-click unsubscribe links
   (signed token, no login, `List-Unsubscribe` headers), and an optional
   in-browser chime pack (three synthesized chimes, no audio files).
+- **Per-member mutes** — everyone is auto-subscribed to everyone's broadcasts
+  by default, but any member can toggle off a specific person's new-handle
+  emails from the directory. One-directional and silent (the muted member is
+  never told, and nothing is written to the shared change history); it only
+  suppresses that person's broadcast emails — vouching, visibility, and every
+  other interaction are untouched. Entirely separate from the 120-day
+  check-in mute. *Scale note: the flat toggle list on the directory is right
+  for a small group; past ~100 members, revisit with search-as-you-type or
+  platform-based filtering rather than growing this list.*
 - **Data rights** — self-serve JSON export of everything stored about you, and
   self-serve **hard delete** (password + typed confirmation) that purges the
   account, handles, vouches, and audit entries immediately.
 - **Two moods** — 🌸 *My Melody mode* (soft pastel pink) and 💀 *Kuromi mode*
   (dark and punkier), with sparkle micro-animations throughout.
+- **Mobile-ready** — responsive across all pages: nav collapses behind a
+  hamburger on small screens, ≥44px touch targets on touch devices, wide
+  tables scroll inside themselves, platform cards and lists reflow, and all
+  interactions (vouch, check-in, mute toggles, theme switch, tooltips) work
+  by tap. PWA/home-screen install deliberately deferred to a later pass.
+- **Profile deep links** — a handle's @username links straight to the profile
+  (new tab) on platforms with predictable URL patterns — Instagram, TikTok,
+  X, YouTube, Twitch, Tumblr, Bluesky, Pinterest, Telegram, and Snapchat via
+  its add-link format. Links are always derived from the stored username
+  (never entered/stored as URLs). Discord and Signal have no public profile
+  URL, so an ⓘ icon shows a tap/hover tooltip: add them manually using the
+  handle.
 - **Admin role** — admins can view/edit/hard-delete any member's account,
   revoke or reissue invite links, and reverse a disputed vouch. Every admin
   action is written to the change history tagged 🛡️ as an admin action, so

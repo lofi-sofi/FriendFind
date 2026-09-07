@@ -88,6 +88,7 @@ def create_app(test_config: dict | None = None) -> Flask:
             "current_user": g.get("user"),
             "PLATFORMS": platforms.PLATFORMS,
             "platform_name": platforms.platform_name,
+            "profile_url": platforms.profile_url,
             "charm": lambda slug, size=24: Markup(platforms.charm_svg(slug, size)),
         }
 

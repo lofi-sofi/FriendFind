@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import handle_link with context %}
 {% block title %}{{ platform_name(slug) }}{% endblock %}
 {% block content %}
 <h1>{{ charm(slug, 36) }} {{ platform_name(slug) }}</h1>
@@ -10,7 +11,7 @@
   <li class="handle-row">
     <div>
       <strong>{{ h.owner.display_name }}</strong>
-      <span class="handle-username">@{{ h.username }}</span>
+      {{ handle_link(h) }}
       {% if h.note %}<em class="muted">{{ h.note }}</em>{% endif %}
     </div>
     <div>

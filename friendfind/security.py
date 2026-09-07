@@ -39,3 +39,15 @@ def read_token(token: str, salt: str, max_age: int | None = None):
 # Salts (namespaces) for the different token kinds.
 SALT_VERIFY_EMAIL = "verify-email"
 SALT_UNSUBSCRIBE = "unsubscribe"
+SALT_RESET_PASSWORD = "reset-password"
+
+
+def password_fingerprint(password_hash: str) -> str:
+    """Short digest of the stored hash, embedded in reset tokens.
+
+    Changing the password changes the fingerprint, so any outstanding
+    reset token stops matching — which makes tokens single-use without
+    needing a used-token table.
+    """
+    import hashlib
+    return hashlib.sha256(password_hash.encode()).hexdigest()[:16]

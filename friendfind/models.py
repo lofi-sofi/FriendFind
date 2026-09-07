@@ -88,6 +88,27 @@ class User(db.Model):
         return False
 
 
+class MemberMute(db.Model):
+    """One member silently muting another's new-handle broadcast emails.
+
+    One-directional and private: the muted member is never told, and it has
+    no effect on anything except whether the muter receives that person's
+    "new handle" emails. Entirely separate from the 120-day check-in mute
+    (User.is_muted), which pauses ALL incoming email for an overdue member.
+    """
+    __tablename__ = "member_mutes"
+    __table_args__ = (
+        db.UniqueConstraint("muter_id", "muted_id", name="uq_member_mute"),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    muter_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"),
+                         nullable=False, index=True)
+    muted_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"),
+                         nullable=False, index=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
+
+
 class Invite(db.Model):
     __tablename__ = "invites"
 
@@ -184,6 +205,9 @@ def purge_user(user: User) -> None:
     """
     Vouch.query.filter_by(voucher_id=user.id).delete()
     AuditLog.query.filter_by(actor_id=user.id).delete()
+    MemberMute.query.filter(
+        (MemberMute.muter_id == user.id) | (MemberMute.muted_id == user.id)
+    ).delete()
     # Audit entries other members created about this user's handles
     # (vouches) also mention them — purge those too.
     for h in user.handles:

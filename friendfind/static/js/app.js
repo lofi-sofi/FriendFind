@@ -8,6 +8,14 @@
     var saved = localStorage.getItem("ff-theme");
     if (saved === "melody" || saved === "kuromi") root.dataset.theme = saved;
   } catch (e) {}
+  /* ---- collapsible nav on small screens ---- */
+  var navToggle = document.getElementById("nav-toggle");
+  var nav = document.getElementById("site-nav");
+  if (navToggle && nav) navToggle.addEventListener("click", function () {
+    var open = nav.classList.toggle("nav-open");
+    navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+
   var toggle = document.getElementById("theme-toggle");
   if (toggle) toggle.addEventListener("click", function () {
     var next = root.dataset.theme === "kuromi" ? "melody" : "kuromi";
