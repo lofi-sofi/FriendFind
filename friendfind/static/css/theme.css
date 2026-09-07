@@ -172,6 +172,28 @@ input:focus, select:focus { outline: none; border-color: var(--accent); }
 
 .charm { vertical-align: middle; }
 
+.handle-link { text-decoration: none; border-bottom: 1px dashed var(--accent); }
+.handle-link:hover { border-bottom-style: solid; }
+
+/* "no profile link" tooltip — shows on hover AND on focus, so a tap on
+   touch screens (focusing the tabindex'd icon) opens it too */
+.info-tip {
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; margin-left: .3rem; border-radius: 50%;
+  background: var(--bg-soft); color: var(--ink-soft); font-size: .8rem;
+  border: 1px solid var(--border); cursor: help; vertical-align: middle;
+}
+.info-tip::after {
+  content: attr(data-tip); position: absolute; bottom: 135%; left: 50%;
+  transform: translateX(-50%); background: var(--ink); color: var(--card);
+  padding: .5rem .75rem; border-radius: 12px; font-size: .78rem; font-weight: 500;
+  width: max-content; max-width: min(230px, 78vw); white-space: normal;
+  text-align: center; opacity: 0; pointer-events: none;
+  transition: opacity .15s ease; z-index: 6;
+}
+.info-tip:hover::after, .info-tip:focus::after { opacity: 1; }
+.info-tip:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
 .qr-box { display: flex; justify-content: center; padding: .8rem;
   background: #fff; border-radius: 16px; border: 2px solid var(--border); }
 
@@ -199,3 +221,65 @@ input:focus, select:focus { outline: none; border-color: var(--accent); }
 
 @keyframes flash-pop { from { transform: scale(.96); } to { transform: scale(1); } }
 .flash { animation: flash-pop .25s ease; }
+
+/* ============ responsive / mobile ============ */
+
+/* hamburger hidden on wide screens */
+.nav-toggle {
+  display: none; border: 2px solid var(--border); background: var(--bg-soft);
+  color: var(--ink); border-radius: 14px; padding: .4rem .9rem; cursor: pointer;
+  font-family: "Baloo 2", cursive; font-size: 1rem; font-weight: 700;
+  min-height: 44px;
+}
+
+/* comfortable touch targets on touch devices, regardless of screen size */
+@media (pointer: coarse) {
+  .btn { min-height: 44px; padding-top: .55rem; padding-bottom: .55rem; }
+  .btn-small { min-height: 40px; padding: .45rem .9rem; }
+  .nav a { padding: .5rem .7rem; }
+  .theme-toggle { min-height: 44px; }
+  .info-tip { width: 30px; height: 30px; font-size: .95rem; }
+  .check input, input[type=checkbox] { width: 1.25rem; height: 1.25rem; }
+  .handle-row, .member-row { row-gap: .5rem; }
+}
+
+@media (max-width: 780px) {
+  .topbar { padding: .6rem .9rem; gap: .6rem; }
+  .nav-toggle { display: inline-block; }
+  .nav { display: none; }
+  .nav.nav-open {
+    display: flex; flex-direction: column; align-items: stretch;
+    order: 10; width: 100%; gap: .15rem; padding-top: .4rem;
+    border-top: 1px dashed var(--border);
+  }
+  .nav.nav-open a {
+    padding: .8rem .6rem; border-radius: 12px; font-size: 1.05rem;
+    min-height: 44px; display: flex; align-items: center;
+  }
+  .topbar-right { margin-left: auto; }
+
+  h1 { font-size: 1.55rem; }
+  .page { margin-top: 1rem; }
+  .card { padding: 1rem; border-radius: 18px; }
+  .card-narrow { margin: 1rem auto; }
+
+  /* wide tables (invites, audit, admin) scroll inside themselves instead
+     of forcing the page to scroll horizontally */
+  .table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  .platform-grid { grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); gap: .7rem; }
+
+  /* stacked rows: info on top, actions below, full-width tap area */
+  .handle-row { flex-direction: column; align-items: flex-start; }
+  .handle-row > div:last-child { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; }
+  .member-row { align-items: flex-start; }
+
+  .vouch-list li form { display: block; margin-top: .4rem; }
+  .btn-big { font-size: 1.2rem; width: 100%; }
+  .flash { font-size: .95rem; }
+}
+
+@media (max-width: 400px) {
+  .platform-grid { grid-template-columns: 1fr 1fr; }
+  .logo { font-size: 1.2rem; }
+}

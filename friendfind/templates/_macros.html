@@ -1,0 +1,11 @@
+{% macro handle_link(h) -%}
+  {%- set url = profile_url(h.platform, h.username) -%}
+  {%- if url -%}
+    <a class="handle-username handle-link" href="{{ url }}"
+       target="_blank" rel="noopener noreferrer"
+       title="Open @{{ h.username }} on {{ platform_name(h.platform) }} in a new tab">@{{ h.username }}</a>
+  {%- else -%}
+    <span class="handle-username">@{{ h.username }}</span><span class="info-tip" tabindex="0" role="note" aria-label="No profile link available — add them manually on {{ platform_name(h.platform) }} using this handle."
+      data-tip="No profile link available — add them manually on {{ platform_name(h.platform) }} using this handle.">ⓘ</span>
+  {%- endif -%}
+{%- endmacro %}

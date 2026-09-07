@@ -15,7 +15,9 @@
     <span class="logo-charm">🎀</span> FriendFind
   </a>
   {% if current_user %}
-  <nav class="nav">
+  <button id="nav-toggle" class="nav-toggle" type="button"
+          aria-expanded="false" aria-controls="site-nav" aria-label="Menu">☰ menu</button>
+  <nav class="nav" id="site-nav">
     <a href="{{ url_for('directory.home') }}">Directory</a>
     <a href="{{ url_for('handles.mine') }}">My handles</a>
     <a href="{{ url_for('checkin.prompt') }}" class="{{ 'nav-alert' if current_user.is_muted or (current_user.days_until_checkin is not none and current_user.days_until_checkin <= 14) }}">Check-in</a>

@@ -47,6 +47,18 @@ trustworthy re-connection.
   account, handles, vouches, and audit entries immediately.
 - **Two moods** — 🌸 *My Melody mode* (soft pastel pink) and 💀 *Kuromi mode*
   (dark and punkier), with sparkle micro-animations throughout.
+- **Mobile-ready** — responsive across all pages: nav collapses behind a
+  hamburger on small screens, ≥44px touch targets on touch devices, wide
+  tables scroll inside themselves, platform cards and lists reflow, and all
+  interactions (vouch, check-in, mute toggles, theme switch, tooltips) work
+  by tap. PWA/home-screen install deliberately deferred to a later pass.
+- **Profile deep links** — a handle's @username links straight to the profile
+  (new tab) on platforms with predictable URL patterns — Instagram, TikTok,
+  X, YouTube, Twitch, Tumblr, Bluesky, Pinterest, Telegram, and Snapchat via
+  its add-link format. Links are always derived from the stored username
+  (never entered/stored as URLs). Discord and Signal have no public profile
+  URL, so an ⓘ icon shows a tap/hover tooltip: add them manually using the
+  handle.
 - **Admin role** — admins can view/edit/hard-delete any member's account,
   revoke or reissue invite links, and reverse a disputed vouch. Every admin
   action is written to the change history tagged 🛡️ as an admin action, so

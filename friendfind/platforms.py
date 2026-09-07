@@ -97,6 +97,34 @@ PLATFORMS = {
 }
 
 
+# Predictable public profile URL patterns, {u} = URL-encoded username.
+# Discord and Signal have no public profile URL — deliberately absent; the
+# UI shows a "add them manually" tooltip instead. Links are always derived
+# from the stored username, never entered or stored as URLs.
+_PROFILE_URLS = {
+    "instagram": "https://www.instagram.com/{u}/",
+    "tiktok": "https://www.tiktok.com/@{u}",
+    "x": "https://x.com/{u}",
+    "youtube": "https://www.youtube.com/@{u}",
+    "twitch": "https://www.twitch.tv/{u}",
+    "tumblr": "https://www.tumblr.com/{u}",
+    "bluesky": "https://bsky.app/profile/{u}",
+    "snapchat": "https://www.snapchat.com/add/{u}",  # Snapchat's add-link format
+    "pinterest": "https://www.pinterest.com/{u}/",
+    "telegram": "https://t.me/{u}",
+}
+
+
+def profile_url(slug: str, username: str) -> str | None:
+    """Outbound profile link for the handle, or None if the platform has
+    no public profile URL pattern."""
+    pattern = _PROFILE_URLS.get(slug)
+    if not pattern:
+        return None
+    from urllib.parse import quote
+    return pattern.format(u=quote(username, safe=""))
+
+
 def platform_name(slug: str) -> str:
     entry = PLATFORMS.get(slug)
     return entry[0] if entry else slug
