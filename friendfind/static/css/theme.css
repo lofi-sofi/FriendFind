@@ -194,6 +194,32 @@ input:focus, select:focus { outline: none; border-color: var(--accent); }
 .info-tip:hover::after, .info-tip:focus::after { opacity: 1; }
 .info-tip:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
 
+.logo-img { width: 30px; height: 30px; vertical-align: -7px; }
+
+.brand-block { text-align: center; margin-bottom: 1rem; }
+.brand-logo { width: 72px; height: 72px; }
+.brand-block h1 { margin: .15em 0 .1em; }
+.tagline {
+  color: var(--ink-soft); font-weight: 600; font-size: 1.02rem;
+  margin: 0 0 .4rem; font-family: "Baloo 2", cursive;
+}
+
+.invite-choice { text-align: center; }
+.invite-choice-lede { font-weight: 600; margin-top: 0; }
+.invite-options {
+  display: flex; flex-direction: column; align-items: center; gap: .5rem;
+}
+.invite-option { font-weight: 600; }
+.invite-or {
+  color: var(--ink-soft); font-size: .82rem; text-transform: uppercase;
+  letter-spacing: .12em; font-weight: 700;
+}
+
+.handle-pair { display: flex; gap: .5rem; }
+.handle-pair select { flex: 0 1 45%; }
+.handle-pair input { flex: 1; }
+.handle-pair select, .handle-pair input { margin-top: .3rem; }
+
 .qr-box { display: flex; justify-content: center; padding: .8rem;
   background: #fff; border-radius: 16px; border: 2px solid var(--border); }
 
@@ -282,4 +308,7 @@ input:focus, select:focus { outline: none; border-color: var(--accent); }
 @media (max-width: 400px) {
   .platform-grid { grid-template-columns: 1fr 1fr; }
   .logo { font-size: 1.2rem; }
+  .logo-img { width: 26px; height: 26px; vertical-align: -6px; }
+  .brand-logo { width: 60px; height: 60px; }
+  .handle-pair { flex-direction: column; gap: 0; }
 }

@@ -2,7 +2,12 @@
 {% block title %}Join the group{% endblock %}
 {% block content %}
 <div class="card card-narrow">
-  <h1>You're invited! 💌</h1>
+  <div class="brand-block">
+    <img class="brand-logo" src="{{ url_for('static', filename='img/logo.svg') }}" alt="FriendFind logo">
+    <h1>FriendFind</h1>
+    <p class="tagline">One account banned shouldn't mean one friend lost.</p>
+  </div>
+  <h2>You're invited! 💌</h2>
   <p>Make your account — you'll get a verification email before it activates.</p>
   <form method="post">
     <input type="hidden" name="invite" value="{{ invite }}">
