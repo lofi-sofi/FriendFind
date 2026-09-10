@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Request an invite{% endblock %}
+{% block content %}
+<div class="card card-narrow">
+  <h1>Request an invite 🔎</h1>
+  <p>This is a private, vetted friend group. Tell the admins who you are —
+     your main social account is how they'll recognize you.</p>
+  <form method="post">
+    <label>Name <input type="text" name="name" maxlength="80" required autofocus></label>
+    <label>Email <input type="email" name="email" required></label>
+    <label>Your largest / primary social account
+      <div class="handle-pair">
+        <select name="platform" required>
+          {% for slug, (pname, _) in platforms.items() %}
+          <option value="{{ slug }}">{{ pname }}</option>
+          {% endfor %}
+        </select>
+        <input type="text" name="username" maxlength="120" placeholder="@username" required>
+      </div>
+      <span class="hint">Required — this is how admins verify it's really you.</span>
+    </label>
+    <label>How do you know the group? <span class="hint">(optional)</span>
+      <textarea name="message" rows="4" maxlength="2000"></textarea>
+    </label>
+    <button class="btn btn-primary sparkle-hover" type="submit">Send request 💌</button>
+  </form>
+  <p><a href="{{ url_for('auth.login') }}">← Back to log in</a></p>
+</div>
+{% endblock %}

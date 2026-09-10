@@ -45,7 +45,7 @@ trustworthy re-connection.
 - **Data rights** — self-serve JSON export of everything stored about you, and
   self-serve **hard delete** (password + typed confirmation) that purges the
   account, handles, vouches, and audit entries immediately.
-- **Two moods** — 🌸 *My Melody mode* (soft pastel pink) and 💀 *Kuromi mode*
+- **Two moods** — 🌸 *Girly Pop mode* (soft pastel pink) and 💀 *Goth Babe mode*
   (dark and punkier), with sparkle micro-animations throughout.
 - **Mobile-ready** — responsive across all pages: nav collapses behind a
   hamburger on small screens, ≥44px touch targets on touch devices, wide

@@ -117,6 +117,54 @@ def login_2fa():
     return render_template("auth/login_2fa.html")
 
 
+# -- Request an invite (cold visitors) ------------------------------------
+
+@bp.route("/request-invite", methods=["GET", "POST"])
+def request_invite():
+    """Public form for non-members to ask for an invite.
+
+    Nothing is stored and no account or invite is created — the details go
+    to the admins by email (same mechanism as Contact Admin), and admins
+    decide manually. The submitted handle exists only in that email; if the
+    person is later invited, their handle goes through the normal
+    add + peer-vouch flow like everyone else's.
+    """
+    from ..platforms import PLATFORMS, platform_name, profile_url
+
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        platform = request.form.get("platform", "")
+        username = request.form.get("username", "").strip().lstrip("@")
+        message = request.form.get("message", "").strip()
+        if not name or "@" not in email or platform not in PLATFORMS or not username:
+            flash("Name, a valid email, and your main social handle are all "
+                  "required.", "error")
+        else:
+            link = profile_url(platform, username)
+            handle_line = (
+                f"{platform_name(platform)}: @{username}"
+                + (f"\n    Profile: {link}" if link else
+                   f"\n    (No public profile URL on {platform_name(platform)} — "
+                   f"look them up manually with this handle.)")
+            )
+            body = (
+                "Someone outside the group is requesting an invite.\n\n"
+                f"Name: {name}\n"
+                f"Email: {email}\n"
+                f"Primary handle:\n    {handle_line}\n"
+                + (f"\nHow they know the group:\n{message}\n" if message else "")
+                + "\nNo account or invite was created. If they check out, "
+                "issue an invite from the Invites page (or `flask "
+                "create-invite`) and send it to them yourself."
+            )
+            for admin in User.query.filter_by(is_admin=True).all():
+                send_email(admin.email,
+                           f"🔎 Invite request from {name}", body)
+            return render_template("auth/request_sent.html")
+    return render_template("auth/request_invite.html", platforms=PLATFORMS)
+
+
 # -- Password reset -------------------------------------------------------
 
 @bp.route("/forgot", methods=["GET", "POST"])

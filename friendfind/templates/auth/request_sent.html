@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Request sent{% endblock %}
+{% block content %}
+<div class="card card-narrow">
+  <h1>Request sent 💌</h1>
+  <p>Thanks! An admin will be in touch if you're a fit. Requests are reviewed
+     first-come, first-served. Sending multiple requests won't get you seen
+     any faster, so please only submit once. 😊</p>
+  <p><a href="{{ url_for('auth.login') }}">← Back to log in</a></p>
+</div>
+{% endblock %}
