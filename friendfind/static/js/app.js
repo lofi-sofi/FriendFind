@@ -1,4 +1,4 @@
-/* Theme toggle (My Melody / Kuromi), WebAudio chimes, heart-sparkle burst. */
+/* Theme toggle (Girly Pop / Goth Babe), WebAudio chimes, heart-sparkle burst. */
 (function () {
   "use strict";
 
