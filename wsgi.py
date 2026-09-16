@@ -20,6 +20,16 @@ def _bootstrap_setup():
         db.session.commit()
         url = url_for("auth.register", invite=invite.code, _external=True)
         return f"Invite URL: {url}"
+    if action == "verify":
+        email = (request.args.get("email") or "").strip().lower()
+        user = User.query.filter_by(email=email).first()
+        if user is None:
+            return f"No member with email {email!r}", 404
+        if not user.email_verified:
+            user.email_verified = True
+            user.check_in()  # matches what the real verify-email link does
+            db.session.commit()
+        return f"{user.display_name} <{user.email}> is now verified."
     if action == "admin":
         email = (request.args.get("email") or "").strip().lower()
         user = User.query.filter_by(email=email).first()
@@ -28,5 +38,5 @@ def _bootstrap_setup():
         user.is_admin = True
         db.session.commit()
         return f"{user.display_name} <{user.email}> is now an admin."
-    return "Use ?action=invite or ?action=admin&email=you@example.com, plus &token=..."
+    return "Use ?action=invite, ?action=verify&email=..., or ?action=admin&email=..., plus &token=..."
 # --- end temporary bootstrap route ---
