@@ -5,3 +5,4 @@ pyotp>=2.9
 segno>=1.6
 itsdangerous>=2.1
 gunicorn>=21.2
+psycopg2-binary>=2.9
