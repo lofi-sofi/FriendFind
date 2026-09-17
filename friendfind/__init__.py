@@ -47,7 +47,11 @@ def create_app(test_config: dict | None = None) -> Flask:
         ),
         MAIL_FROM=os.environ.get("MAIL_FROM", "friendfind@localhost"),
         SMTP_HOST=os.environ.get("SMTP_HOST"),
-        SMTP_PORT=int(os.environ.get("SMTP_PORT", "587")),
+        # 465 + implicit SSL by default: Render's free tier (and similar
+        # hosts) block outbound 587/STARTTLS. Set SMTP_SSL=0 alongside
+        # SMTP_PORT=587 to use STARTTLS instead.
+        SMTP_PORT=int(os.environ.get("SMTP_PORT", "465")),
+        SMTP_SSL=os.environ.get("SMTP_SSL", "1") not in ("0", "false", "no"),
         SMTP_USER=os.environ.get("SMTP_USER"),
         SMTP_PASSWORD=os.environ.get("SMTP_PASSWORD"),
         # Needed so CLI commands (create-invite, send-reminders) can build

@@ -107,6 +107,9 @@ flask set-admin backup@example.com
 export SECRET_KEY="$(python -c 'import secrets; print(secrets.token_hex(32))')"
 export SERVER_NAME=friendfind.example.com   # used for links in emails/CLI
 export SMTP_HOST=smtp.postmarkapp.com SMTP_USER=... SMTP_PASSWORD=...
+# SMTP defaults to port 465 with implicit SSL (Render's free tier blocks
+# other outbound SMTP ports). For a host that needs 587/STARTTLS instead:
+#   export SMTP_PORT=587 SMTP_SSL=0
 export MAIL_FROM="FriendFind <hello@friendfind.example.com>"
 gunicorn wsgi:app
 ```
