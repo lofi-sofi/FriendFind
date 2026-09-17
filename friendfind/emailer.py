@@ -55,8 +55,15 @@ def send_email(to: str, subject: str, body: str,
         outbox.append({"to": to, "subject": subject, "body": body})
         return
 
-    with smtplib.SMTP(host, cfg.get("SMTP_PORT", 587), timeout=20) as smtp:
-        if cfg.get("SMTP_STARTTLS", True):
+    port = cfg.get("SMTP_PORT", 465)
+    if cfg.get("SMTP_SSL", True):
+        # Implicit SSL on port 465 (default) — Render's free tier blocks
+        # other outbound SMTP ports, including 587.
+        smtp_ctx = smtplib.SMTP_SSL(host, port, timeout=20)
+    else:
+        smtp_ctx = smtplib.SMTP(host, port, timeout=20)
+    with smtp_ctx as smtp:
+        if not cfg.get("SMTP_SSL", True):
             smtp.starttls()
         user, password = cfg.get("SMTP_USER"), cfg.get("SMTP_PASSWORD")
         if user:
