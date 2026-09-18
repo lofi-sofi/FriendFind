@@ -46,6 +46,7 @@ def create_app(test_config: dict | None = None) -> Flask:
             "DATABASE_URL", "sqlite:///" + os.path.join(app.instance_path, "friendfind.db")
         ),
         MAIL_FROM=os.environ.get("MAIL_FROM", "friendfind@localhost"),
+        RESEND_API_KEY=os.environ.get("RESEND_API_KEY"),
         SMTP_HOST=os.environ.get("SMTP_HOST"),
         # 465 + implicit SSL by default: Render's free tier (and similar
         # hosts) block outbound 587/STARTTLS. Set SMTP_SSL=0 alongside
