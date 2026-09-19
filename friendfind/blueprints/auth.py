@@ -81,6 +81,11 @@ def verify_email(token):
 
 @bp.route("/login", methods=["GET", "POST"])
 def login():
+    if g.user:
+        # Already signed in: the login form has nothing to offer, and
+        # rendering it would show the members-only nav on a page meant to
+        # be public. Send them home instead.
+        return redirect(url_for("directory.home"))
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")

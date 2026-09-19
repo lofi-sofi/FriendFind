@@ -11,8 +11,8 @@ def test_visible_to_logged_in_members(client, alice):
         html = client.get(path).data.decode()
         assert VIDEO_URL in html, path
         assert LABEL in html, path
-        # opens in a new tab, safely
-        assert f'href="{VIDEO_URL}" target="_blank" rel="noopener"' in html
+        # opens in a new tab, without leaking the app URL via Referer
+        assert f'href="{VIDEO_URL}" target="_blank" rel="noopener noreferrer"' in html
 
 
 def test_hidden_on_public_pages(client, app):
@@ -23,6 +23,16 @@ def test_hidden_on_public_pages(client, app):
         resp = client.get(path)
         assert resp.status_code == 200, path
         assert VIDEO_URL not in resp.data.decode(), path
+
+
+def test_members_are_redirected_off_the_login_page(client, alice):
+    """A signed-in member never lands on /login, so the nav can't leak there."""
+    login(client, "alice@example.com")
+    resp = client.get("/login")
+    assert resp.status_code == 302
+    assert resp.headers["Location"].endswith("/directory/")
+    resp = client.get("/login", follow_redirects=True)
+    assert resp.request.path == "/directory/"
 
 
 def test_hidden_after_logout(client, alice):
