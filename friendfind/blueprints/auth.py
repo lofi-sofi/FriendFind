@@ -21,6 +21,20 @@ VERIFY_MAX_AGE = 60 * 60 * 48  # 48h
 RESET_MAX_AGE = 60 * 60  # reset links live for 1 hour
 
 
+def _bounce_signed_in(message: str | None = None):
+    """Redirect a signed-in member away from a public page, else None.
+
+    The public pages share base.html, which renders the members-only nav
+    whenever a session exists — so a signed-in visitor would see that nav
+    (external links included) on a page meant for outsiders.
+    """
+    if g.user is None:
+        return None
+    if message:
+        flash(message, "info")
+    return redirect(url_for("directory.home"))
+
+
 def _send_verification(user: User) -> None:
     token = make_token({"uid": user.id}, SALT_VERIFY_EMAIL)
     link = url_for("auth.verify_email", token=token, _external=True)
@@ -34,6 +48,11 @@ def _send_verification(user: User) -> None:
 
 @bp.route("/register", methods=["GET", "POST"])
 def register():
+    bounce = _bounce_signed_in(
+        "You're already signed in. Log out first if you're helping someone "
+        "else register with their invite.")
+    if bounce:
+        return bounce
     code = request.values.get("invite", "").strip()
     invite = Invite.query.filter_by(code=code).first() if code else None
     if invite is None or invite.is_used:
@@ -81,6 +100,9 @@ def verify_email(token):
 
 @bp.route("/login", methods=["GET", "POST"])
 def login():
+    bounce = _bounce_signed_in()
+    if bounce:
+        return bounce
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
@@ -130,6 +152,10 @@ def request_invite():
     add + peer-vouch flow like everyone else's.
     """
     from ..platforms import PLATFORMS, platform_name, profile_url
+
+    bounce = _bounce_signed_in("You're already a member — no invite needed! 💗")
+    if bounce:
+        return bounce
 
     if request.method == "POST":
         name = request.form.get("name", "").strip()

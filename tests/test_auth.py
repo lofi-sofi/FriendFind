@@ -1,3 +1,4 @@
+import json
 import re
 
 import pyotp
@@ -49,6 +50,23 @@ def test_register_verify_login_flow(client, app):
 
     resp = login(client, "cara@example.com", "longenoughpw1")
     assert resp.request.path == "/directory/"
+
+
+def test_login_page_bounces_authenticated_members(client, alice, bob):
+    login(client, "alice@example.com")
+    assert client.get("/login").status_code == 302
+    # POST is bounced too — no re-auth as someone else without logging out
+    resp = client.post("/login", data={"email": "bob@example.com",
+                                       "password": "supersecret123"},
+                       follow_redirects=True)
+    assert resp.request.path == "/directory/"
+    # session is untouched — still Alice, not re-authed as Bob
+    assert json.loads(client.get("/account/export").data)["account"]["email"] \
+        == "alice@example.com"
+    # logging out restores the normal login page
+    client.post("/logout")
+    assert client.get("/login").status_code == 200
+    assert login(client, "bob@example.com").request.path == "/directory/"
 
 
 def test_wrong_password_rejected(client, alice):
