@@ -25,14 +25,19 @@ def test_hidden_on_public_pages(client, app):
         assert VIDEO_URL not in resp.data.decode(), path
 
 
-def test_members_are_redirected_off_the_login_page(client, alice):
-    """A signed-in member never lands on /login, so the nav can't leak there."""
+def test_members_are_redirected_off_every_public_page(client, alice):
+    """Signed-in members never land on a public page, so the nav can't leak."""
+    invite = make_invite()
     login(client, "alice@example.com")
-    resp = client.get("/login")
-    assert resp.status_code == 302
-    assert resp.headers["Location"].endswith("/directory/")
-    resp = client.get("/login", follow_redirects=True)
-    assert resp.request.path == "/directory/"
+    for path in ["/login", "/request-invite", f"/register?invite={invite.code}"]:
+        resp = client.get(path)
+        assert resp.status_code == 302, path
+        assert resp.headers["Location"].endswith("/directory/"), path
+        resp = client.get(path, follow_redirects=True)
+        assert resp.request.path == "/directory/", path
+        assert VIDEO_URL in resp.data.decode()  # nav renders where it belongs
+    # the invite is untouched — still usable by its intended recipient
+    assert not invite.is_used
 
 
 def test_hidden_after_logout(client, alice):
